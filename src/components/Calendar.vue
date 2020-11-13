@@ -159,7 +159,40 @@ export default {
   }),
   mounted(){
     this.getEvents();
+  },
+  computed: {
+    // title(){
+    //   const{start, end} = this
+    //   if(!start || !end){
+    //     return ''
+    //   }
+    //   const startMonth = this.monthFormatter(start)
+    //   const endMonth =this.monthFormatter(end)
+    //   const suffixMonth = startMonth === endMonth ? '':endMonth
 
+    //   const startYear = start.year
+    //   const endYear = end.year
+    //   const suffixYear = startYear === endYear ? '':endYear
+
+    //   const startDay = start.day + this.nth(start.day)
+    //   const endDay = end.day + this.nth(end.day)
+
+    //   switch (this.type) {
+    //     case 'month':
+    //             return `$(startMonth) $(startYear)`
+    //     case 'week':
+    //     case '4day':
+    //       return `$(startMonth) $(startDay) $(startYear) - $(suffixMonth) $(endDay) $(suffixYear)`
+    //     case 'day':
+    //       return `$(startMonth) $(startDay) $(startYear)`  
+    //   }
+    //   return ''
+    // },
+    // monthFormatter(){
+    //   return this.$refs.calendar.getFormatter({
+    //     timeZone:'UTC', month:'long',
+    //   })
+    // }
   },
   methods:{
     async getEvents(){
@@ -172,10 +205,48 @@ export default {
       });
       this.events = events;
     },
+    viewDay ({ date }) {
+        this.focus = date
+        this.type = 'day'
+      },
+      getEventColor (event) {
+        return event.color
+      },
+      setToday () {
+        this.focus = ''
+      },
+      prev () {
+        this.$refs.calendar.prev()
+      },
+      next () {
+        this.$refs.calendar.next()
+      },
+      showEvent ({ nativeEvent, event }) {
+        const open = () => {
+          this.selectedEvent = event
+          this.selectedElement = nativeEvent.target
+          setTimeout(() => {
+            this.selectedOpen = true
+          }, 10)
+        }
+
+        if (this.selectedOpen) {
+          this.selectedOpen = false
+          setTimeout(open, 10)
+        } else {
+          open()
+        }
+
+        nativeEvent.stopPropagation()
+      },
+      updateRange ({start, end}){
+        this.start = start
+        this.end = end
+      },
+      nth(d){
+        return d > 3 && d < 21
+          ?'th' :['th','st','nd','rd','th','th','th','th','th','th'][d % 10]
+      },
   }
-
-
-    
-    
 }
 </script>
